@@ -142,23 +142,3 @@ def get_task_status(task_id: str):
         raise HTTPException(status_code=404, detail="Task not found")
     
     return TaskStatusResponse(task_id=task_id, status=task['status'], result=task.get('result'))
-
-# --- DISCUSSION POINTS FOR YOUR ASSIGNMENT ---
-# Statelessness & Horizontal Scaling:
-# This app is "stateless" in that it doesn't rely on local files. However, for true
-# horizontal scaling, shared state must be externalized. In this implementation, both the
-# `in_memory_cache` and the `tasks_db` are stored in the application's memory. This means
-# if you run multiple copies of the app, they will not share cache or task statuses.
-# For a production system, both of these would be moved to a shared, persistent
-# data store like Redis or a PostgreSQL database.
-
-# Task Queuing: FastAPI vs. Celery
-# We've used FastAPI's `BackgroundTasks`. This is great for simple, quick tasks.
-# However, if the app crashes, the task is lost.
-# For a robust production system, a dedicated task queue like Celery with a message
-# broker (like RabbitMQ or Redis) is superior. Celery provides:
-# - Persistence: Tasks are stored in the broker and will be re-tried if a worker fails.
-# - Dedicated Workers: You can run processing on separate machines from the API server.
-# - Monitoring: Better tools for monitoring task progress and failures.
-# The design choice here was to use `BackgroundTasks` to keep the project simple
-# and self-contained, as requested.
